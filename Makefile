@@ -1,4 +1,4 @@
-obj-m += fwk.o
+obj-m += main.o
 
 all:
 	$(MAKE) -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
