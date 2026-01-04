@@ -51,44 +51,42 @@ Zkopírovat kód
 
 ### Debian / Ubuntu
 
-```bash
+bash
 sudo apt update
 sudo apt install -y build-essential linux-headers-$(uname -r)
-Alternative (not recommended for module build):
 
+Alternative (not recommended for module build):
 bash
-Zkopírovat kód
 sudo apt install -y linux-libc-dev
+
 Fedora
 bash
-Zkopírovat kód
 sudo dnf install -y gcc make kernel-headers kernel-devel
+
 Arch Linux
 bash
-Zkopírovat kód
 sudo pacman -S --needed base-devel linux-headers
+
 Build
 bash
-Zkopírovat kód
 make
+
 Result:
-
 css
-Zkopírovat kód
 main.ko
-Clean:
 
+Clean:
 bash
-Zkopírovat kód
 make clean
+
 Load Module
 bash
-Zkopírovat kód
+
 sudo insmod main.ko AUTH_PORT=40000 PROTECTED_PORT=9000 ALLOW_TTL_SEC=30
 Unload:
 
 bash
-Zkopírovat kód
+
 sudo rmmod main
 Module Parameters
 Parameter	Description	Example
@@ -99,24 +97,24 @@ ALLOW_TTL_SEC	Authorization lifetime (seconds)	30
 Testing
 Watch logs
 bash
-Zkopírovat kód
+
 sudo dmesg -w
 Test without authorization (should DROP)
 bash
-Zkopírovat kód
+
 echo test | nc -u -w1 <SERVER_IP> 9000
 Send authorization packet
 bash
-Zkopírovat kód
+
 echo AUTH | nc -u -w1 <SERVER_IP> 40000
 Expected log:
 
 php-template
-Zkopírovat kód
+
 AUTH OK allow <IP> -> port 9000
 Test again (should ALLOW)
 bash
-Zkopírovat kód
+
 echo test | nc -u -w1 <SERVER_IP> 9000
 TTL expiration
 After ALLOW_TTL_SEC seconds, traffic is blocked again automatically.
