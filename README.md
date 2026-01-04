@@ -1,92 +1,140 @@
-# Zero-Trust Firewall (Linux Kernel)
+# Zero-Trust Firewall (Linux Kernel Module)
 
-A minimalistic **Zero-Trust firewall implemented as a Linux kernel module**, designed as a **clean reference architecture** rather than a production-ready appliance.
+A **Linux kernel firewall** implementing a **Zero-Trust network access model** using Netfilter hooks.
 
-The firewall follows a **default-deny** model and dynamically allows traffic **only after explicit cryptographic authorization (SPA-like handshake)**.
+All traffic to a protected service port is **denied by default** and is only allowed after an explicit **authorization packet** is received. Authorization creates a **time-limited allow rule** bound to the source IP and protocol.
 
-This project is intended for:
+This project is a **reference implementation** intended for:
 - kernel developers
 - security engineers
-- researchers
-- anyone designing custom firewall / Zero-Trust protocols at kernel level
+- Zero-Trust / SPA research
+- learning Netfilter and kernel networking
 
 ---
 
-## ✨ Key Features
+## Features
 
-- Linux **kernel-space firewall** (Netfilter hook)
-- **Zero-Trust by design** (no open ports by default)
-- **Single Packet Authorization (SPA)** style access
-- Dynamic, time-limited flow allowlist
-- Stateless auth + stateful enforcement
-- Realtime kernel logging
-- Minimal, readable, extensible C code
-- No userspace dependencies
-
----
-
-## 🧠 Architecture Overview
-
-**Traffic flow:**
+- Linux **kernel-space** firewall
+- **Default deny** policy
+- SPA-like authorization channel
+- Time-limited access (TTL)
+- No userspace daemon required
+- Minimal and auditable C code
+- Realtime logging via `dmesg`
 
 ---
 
-## Research & Enterprise Context
+## Architecture Overview
 
-This project is intentionally positioned between:
+Incoming packet
+└─> Netfilter PRE_ROUTING
+├─ AUTH packet (AUTH_PORT)?
+│ └─ verify → allow flow (TTL)
+└─ PROTECTED_PORT?
+└─ allow only if authorized
 
-- academic research
-- enterprise security architecture
-- kernel-level systems engineering
-
-It is **not a product**, but a **reference design**.
-
----
-
-## Intended Use Cases
-
-- Studying Zero-Trust enforcement at kernel level
-- Prototyping new firewall / authorization protocols
-- Teaching kernel networking and security concepts
-- Evaluating SPA-like models in controlled environments
+yaml
+Zkopírovat kód
 
 ---
 
-## Design Constraints
+## Requirements
 
-The following constraints are intentional:
-
-- No userspace control plane
-- No configuration DSL
-- No automatic rule learning
-- No silent fallbacks
-
-These choices keep the system:
-- auditable
-- deterministic
-- resistant to configuration drift
+- Linux server with loadable modules
+- Kernel headers matching the running kernel
+- `gcc`, `make`
+- Root privileges
 
 ---
 
-## Comparison to Traditional Firewalls
+## Install Dependencies
 
-| Feature | Traditional Firewall | This Project |
-|------|----------------------|-------------|
-| Default policy | Allow with rules | Deny everything |
-| Trust model | Network-based | Identity-based |
-| Rule lifetime | Static | Time-limited |
-| Control plane | Complex | Minimal |
-| Auditability | Medium | High |
+### Debian / Ubuntu
 
----
+```bash
+sudo apt update
+sudo apt install -y build-essential linux-headers-$(uname -r)
+Alternative (not recommended for module build):
 
-## Academic Note
+bash
+Zkopírovat kód
+sudo apt install -y linux-libc-dev
+Fedora
+bash
+Zkopírovat kód
+sudo dnf install -y gcc make kernel-headers kernel-devel
+Arch Linux
+bash
+Zkopírovat kód
+sudo pacman -S --needed base-devel linux-headers
+Build
+bash
+Zkopírovat kód
+make
+Result:
 
-The architecture aligns with modern research trends:
-- Zero-Trust Networking
-- Capability-based access
-- Explicit authorization channels
-- Kernel-enforced security boundaries
+css
+Zkopírovat kód
+main.ko
+Clean:
 
-This repository may be cited or referenced in academic or internal research.
+bash
+Zkopírovat kód
+make clean
+Load Module
+bash
+Zkopírovat kód
+sudo insmod main.ko AUTH_PORT=40000 PROTECTED_PORT=9000 ALLOW_TTL_SEC=30
+Unload:
 
+bash
+Zkopírovat kód
+sudo rmmod main
+Module Parameters
+Parameter	Description	Example
+AUTH_PORT	UDP port used for authorization packets	40000
+PROTECTED_PORT	Protected destination port	9000
+ALLOW_TTL_SEC	Authorization lifetime (seconds)	30
+
+Testing
+Watch logs
+bash
+Zkopírovat kód
+sudo dmesg -w
+Test without authorization (should DROP)
+bash
+Zkopírovat kód
+echo test | nc -u -w1 <SERVER_IP> 9000
+Send authorization packet
+bash
+Zkopírovat kód
+echo AUTH | nc -u -w1 <SERVER_IP> 40000
+Expected log:
+
+php-template
+Zkopírovat kód
+AUTH OK allow <IP> -> port 9000
+Test again (should ALLOW)
+bash
+Zkopírovat kód
+echo test | nc -u -w1 <SERVER_IP> 9000
+TTL expiration
+After ALLOW_TTL_SEC seconds, traffic is blocked again automatically.
+
+Security Notes
+⚠️ The authorization mechanism is intentionally simple and NOT cryptographically secure.
+
+Before any real deployment:
+
+replace demo auth with HMAC or signatures
+
+add replay protection
+
+rate-limit AUTH_PORT
+
+audit thoroughly
+
+See SECURITY.md for details.
+
+License
+GPL-2.0
