@@ -26,12 +26,12 @@ This project is a **reference implementation** intended for:
 
 ## Architecture Overview
 
-Incoming packet
-└─> Netfilter PRE_ROUTING
-├─ AUTH packet (AUTH_PORT)?
-│ └─ verify → allow flow (TTL)
-└─ PROTECTED_PORT?
-└─ allow only if authorized
+**Incoming packet**
+--> **Netfilter PRE_ROUTING**
+-->**AUTH packet (AUTH_PORT)** ?
+-->* verify** -->**allow flow (TTL)**
+--> **PROTECTED_PORT** ?
+--> **allow only if authorized**
 
 ---
 
