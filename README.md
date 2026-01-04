@@ -33,9 +33,6 @@ Incoming packet
 └─ PROTECTED_PORT?
 └─ allow only if authorized
 
-yaml
-Zkopírovat kód
-
 ---
 
 ## Requirements
@@ -47,92 +44,91 @@ Zkopírovat kód
 
 ---
 
-## Install Dependencies
-
+### Install Dependencies
+---
 ### Debian / Ubuntu
 
-bash
-sudo apt update
-sudo apt install -y build-essential linux-headers-$(uname -r)
-
+```bash
+    sudo apt update
+    sudo apt install -y build-essential linux-headers-$(uname -r)
+```
+---
 Alternative (not recommended for module build):
+```bash
 bash
 sudo apt install -y linux-libc-dev
-
-Fedora
-bash
+```
+---
+### Fedora
+```bash
 sudo dnf install -y gcc make kernel-headers kernel-devel
-
-Arch Linux
-bash
+```
+---
+### Arch Linux
+```bash
 sudo pacman -S --needed base-devel linux-headers
+```
+---
+### Build
+`make`
 
-Build
-bash
-make
+### Result:
+`main.ko`
 
-Result:
-css
-main.ko
-
-Clean:
-bash
-make clean
-
-Load Module
-bash
-
+### Clean:
+`make clean`
+---
+### Load Module
+```bash
 sudo insmod main.ko AUTH_PORT=40000 PROTECTED_PORT=9000 ALLOW_TTL_SEC=30
-Unload:
-
-bash
-
-sudo rmmod main
-Module Parameters
-Parameter	Description	Example
-AUTH_PORT	UDP port used for authorization packets	40000
-PROTECTED_PORT	Protected destination port	9000
-ALLOW_TTL_SEC	Authorization lifetime (seconds)	30
-
-Testing
-Watch logs
-bash
-
+```
+---
+###Unload:
+    sudo rmmod main
+	
+---
+### Module Parameters
+| Parameter        | Description                             | Example |
+| ---------------- | --------------------------------------- | ------- |
+| `AUTH_PORT`      | UDP port used for authorization packets | `40000` |
+| `PROTECTED_PORT` | Protected destination port              | `9000`  |
+| `ALLOW_TTL_SEC`  | Authorization lifetime (seconds)        | `30`    |
+---
+### Testing
+**Watch logs**
+```bash
 sudo dmesg -w
-Test without authorization (should DROP)
-bash
-
+```
+### Test without authorization (should DROP)
+```bash
 echo test | nc -u -w1 <SERVER_IP> 9000
-Send authorization packet
-bash
+```
 
+### Send authorization packet
+```bash
 echo AUTH | nc -u -w1 <SERVER_IP> 40000
-Expected log:
+```
 
-php-template
-
+### Expected log:
+```bash
 AUTH OK allow <IP> -> port 9000
-Test again (should ALLOW)
-bash
+```
 
+### Test again (should ALLOW)
+```bash
 echo test | nc -u -w1 <SERVER_IP> 9000
-TTL expiration
-After ALLOW_TTL_SEC seconds, traffic is blocked again automatically.
+```
+### TTL expiration
+**After ALLOW_TTL_SEC seconds, traffic is blocked again automatically.**
 
-Security Notes
+**Security Notes**
 ⚠️ The authorization mechanism is intentionally simple and NOT cryptographically secure.
 
-Before any real deployment:
+- Before any real deployment:
+- replace demo auth with HMAC or signatures
+- add replay protection
+- rate-limit AUTH_PORT
+- audit thoroughly
 
-replace demo auth with HMAC or signatures
+**See SECURITY.md for details.**
 
-add replay protection
-
-rate-limit AUTH_PORT
-
-audit thoroughly
-
-See SECURITY.md for details.
-
-License
-GPL-2.0
