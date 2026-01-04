@@ -1,7 +1,7 @@
-// fwk.c - Linux kernel firewall template (Netfilter hook)
+// - Linux kernel firewall template (Netfilter hook)
 // Build: make (see Makefile below)
-// Load:  sudo insmod fwk.ko
-// Unload:sudo rmmod fwk
+// Load:  sudo insmod main.ko
+// Unload:sudo rmmod main
 //
 // Design:
 // - Stateless: drop everything to PROTECTED_PORT unless allowed
