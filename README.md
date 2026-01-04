@@ -84,8 +84,9 @@ sudo insmod main.ko AUTH_PORT=40000 PROTECTED_PORT=9000 ALLOW_TTL_SEC=30
 ```
 ---
 Unload:
-    sudo rmmod main
-	
+```bash
+sudo rmmod main
+```	
 ---
 ### Module Parameters
 | Parameter        | Description                             | Example |
