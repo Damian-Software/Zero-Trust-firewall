@@ -83,7 +83,7 @@ sudo pacman -S --needed base-devel linux-headers
 sudo insmod main.ko AUTH_PORT=40000 PROTECTED_PORT=9000 ALLOW_TTL_SEC=30
 ```
 ---
-###Unload:
+Unload:
     sudo rmmod main
 	
 ---
