@@ -29,3 +29,64 @@ This project is intended for:
 
 **Traffic flow:**
 
+---
+
+## Research & Enterprise Context
+
+This project is intentionally positioned between:
+
+- academic research
+- enterprise security architecture
+- kernel-level systems engineering
+
+It is **not a product**, but a **reference design**.
+
+---
+
+## Intended Use Cases
+
+- Studying Zero-Trust enforcement at kernel level
+- Prototyping new firewall / authorization protocols
+- Teaching kernel networking and security concepts
+- Evaluating SPA-like models in controlled environments
+
+---
+
+## Design Constraints
+
+The following constraints are intentional:
+
+- No userspace control plane
+- No configuration DSL
+- No automatic rule learning
+- No silent fallbacks
+
+These choices keep the system:
+- auditable
+- deterministic
+- resistant to configuration drift
+
+---
+
+## Comparison to Traditional Firewalls
+
+| Feature | Traditional Firewall | This Project |
+|------|----------------------|-------------|
+| Default policy | Allow with rules | Deny everything |
+| Trust model | Network-based | Identity-based |
+| Rule lifetime | Static | Time-limited |
+| Control plane | Complex | Minimal |
+| Auditability | Medium | High |
+
+---
+
+## Academic Note
+
+The architecture aligns with modern research trends:
+- Zero-Trust Networking
+- Capability-based access
+- Explicit authorization channels
+- Kernel-enforced security boundaries
+
+This repository may be cited or referenced in academic or internal research.
+
